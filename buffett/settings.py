@@ -140,3 +140,10 @@ STATIC_URL = '/static/'
 GRAPHENE = {
     'SCHEMA': 'buffett.schema.schema',
 }
+
+FOREX_CREDENTIALS = {
+    'url': os.environ.get('FOREX_URL'),
+    'username': os.environ.get('FOREX_USERNAME'),
+    'session': os.environ.get('FOREX_SESSION'),
+    'sleep_secs': int(os.environ.get('FOREX_DAEMON_SLEEPTIME', 43200))
+}
