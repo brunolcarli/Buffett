@@ -10,3 +10,7 @@ migrate:
 
 run:
 	python manage.py runserver 0.0.0.0:9988
+
+forex_daemon:
+	python manage.py forex_usdbrl_collector
+
