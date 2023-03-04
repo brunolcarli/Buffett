@@ -28,7 +28,7 @@ class ForexCrawler:
 
     def process_price_bars(self, data):
         for price_bar in data:
-            dt = self.preprocess_datetime(data['BarDate'])
+            dt = self.preprocess_datetime(price_bar['BarDate'])
             try:
                 new_price_bar, created = PriceBars.objects.get_or_create(
                     datetime_reference=dt
@@ -39,10 +39,10 @@ class ForexCrawler:
                 continue
 
             if created:
-                new_price_bar.open = data['Open']
-                new_price_bar.close = data['Close']
-                new_price_bar.low = data['Low']
-                new_price_bar.high = data['High']
+                new_price_bar.open = price_bar['Open']
+                new_price_bar.close = price_bar['Close']
+                new_price_bar.low = price_bar['Low']
+                new_price_bar.high = price_bar['High']
                 new_price_bar.save()
 
 
