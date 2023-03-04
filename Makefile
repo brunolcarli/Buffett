@@ -9,4 +9,4 @@ migrate:
 	python manage.py migrate
 
 run:
-	python manage.py runserver 0.0.0.0: 9988
+	python manage.py runserver 0.0.0.0:9988
