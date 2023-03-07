@@ -11,10 +11,10 @@ migrate:
 run:
 	python manage.py runserver 0.0.0.0:9988
 
-forex_daemon:
-	python manage.py forex_usdbrl_collector
+usdbrl_daemon:
+	python manage.py usdbrl_collector
 
-target: forex_daemon run
+target: usdbrl_daemon run
 
 pipe:
 	make install

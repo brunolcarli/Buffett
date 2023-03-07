@@ -1,7 +1,11 @@
 import graphene
 from django.conf import settings
-from api.models import PriceBars, PartialPriceBar
+from api.models import PriceBars, PartialPriceBar, USDBRL
 
+
+class USDBRLType(graphene.ObjectType):
+    datetime_reference = graphene.DateTime()
+    price = graphene.Float()
 
 
 class PriceBarsType(graphene.ObjectType):
@@ -26,6 +30,15 @@ class Query:
     def resolve_version(self, info, **kwargs):
         return settings.VERSION
 
+    usd_brl = graphene.List(
+        USDBRLType,
+        datetime_reference__gte=graphene.Date(),
+        datetime_reference__lte=graphene.Date(),
+        price__gte=graphene.Float(),
+        price__lte=graphene.Float()
+    )
+    def resolve_usd_brl(self, info, **kwargs):
+        return USDBRL.objects.filter(**kwargs)
 
     price_bars = graphene.List(
         PriceBarsType,

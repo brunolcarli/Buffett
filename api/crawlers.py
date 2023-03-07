@@ -1,7 +1,36 @@
 from time import sleep
 from datetime import datetime
+from bs4 import BeautifulSoup
 import requests
-from api.models import PriceBars, PartialPriceBar
+from api.models import PriceBars, PartialPriceBar, USDBRL
+
+
+class USDBRLCrawler:
+    def __init__(self, url, sleep_secs):
+        self.url = url
+        self.sleep_secs = sleep_secs
+
+    def get_data(self):
+        response = requests.get(self.url)
+
+        if response.status_code != 200:
+            print('Error on requesting data with status code ', response.status_code)
+            return False
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        value = soup.find(class_='px-last font_xl font_extra_bold margin-xxs-right').text
+        if value:
+            try:
+                USDBRL.objects.create(float(value))
+            except Exception as err:
+                print('Failed saving USDBRL value with error:')
+                print(str(err))
+
+    def run(self):
+        while True:
+            self.get_data()
+            sleep(self.sleep_secs)
+
 
 
 class ForexCrawler:
