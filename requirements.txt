@@ -10,3 +10,4 @@ django-graphql-jwt==0.2.1
 PyJWT==1.7.0
 django-cors-headers==3.0.2
 dateparser
+beautifulsoup4==4.10.0
