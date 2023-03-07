@@ -21,7 +21,8 @@ class USDBRLCrawler:
         value = soup.find(class_='px-last font_xl font_extra_bold margin-xxs-right').text
         if value:
             try:
-                USDBRL.objects.create(float(value))
+                record = USDBRL.objects.create(price=float(value))
+                record.save()
             except Exception as err:
                 print('Failed saving USDBRL value with error:')
                 print(str(err))
