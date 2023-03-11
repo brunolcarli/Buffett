@@ -27,40 +27,11 @@ class USDBRLStatistics(graphene.ObjectType):
 class USDBRLType(graphene.ObjectType):
     datetime_reference = graphene.DateTime()
     price = graphene.Float()
-    statistics = graphene.Field(USDBRLStatistics)
 
     def resolve_datetime_reference(self, info, **kwargs):
         # Resolve datetime to GMT-3
         return self.datetime_reference.astimezone(pytz.timezone('America/Sao_Paulo'))
-
-    def resolve_statistics(self, info, **kwargs):
-        df = info.variable_values['dataframe']
-        hour_df = USDBRLDFHandler.get_hour_group(df)
-        week_df = USDBRLDFHandler.get_weekday_group(df)
-        return USDBRLStatistics(
-            diff=df.DIFF.values,
-            rolling=df.ROLLING.values,
-            grouped_by_hour=USDBRLGroupedStatistic(
-                mean=hour_df.MEAN.values,
-                variance=hour_df.VARIANCE.values,
-                positive_std=hour_df.POS_STD.values,
-                negative_std=hour_df.NEG_STD.values,
-                relative_frequency=hour_df.REL_FREQ.values,
-                ewm=hour_df.MEAN.ewm(alpha=.6).mean().values,
-                diff=hour_df.DIFF.values,
-                labels=hour_df.index.astype(str).values
-            ),
-            grouped_by_weekday=USDBRLGroupedStatistic(
-                mean=week_df.MEAN.values,
-                variance=week_df.VARIANCE.values,
-                positive_std=week_df.POS_STD.values,
-                negative_std=week_df.NEG_STD.values,
-                relative_frequency=week_df.REL_FREQ.values,
-                ewm=week_df.MEAN.ewm(alpha=.6).mean().values,
-                diff=week_df.DIFF.values,
-                labels=week_df.index.values
-            )
-        )
+        
 
 class PriceBarsType(graphene.ObjectType):
     datetime_reference = graphene.DateTime()
@@ -91,10 +62,45 @@ class Query:
         price__lte=graphene.Float()
     )
     def resolve_usd_brl(self, info, **kwargs):
+        return USDBRL.objects.filter(**kwargs)
+
+    usdbrl_statistics = graphene.Field(
+        USDBRLStatistics,
+        datetime_reference__gte=graphene.Date(),
+        datetime_reference__lte=graphene.Date(),
+        price__gte=graphene.Float(),
+        price__lte=graphene.Float()
+    )
+    def resolve_usdbrl_statistics(self, info, **kwargs):
         records = USDBRL.objects.filter(**kwargs)
-        info.variable_values['dataframe'] = USDBRLDFHandler.get_dataframe(records)
-        return records
-        
+
+        df = USDBRLDFHandler.get_dataframe(records)
+        hour_df = USDBRLDFHandler.get_hour_group(df)
+        week_df = USDBRLDFHandler.get_weekday_group(df)
+        return USDBRLStatistics(
+            diff=df.DIFF.values,
+            rolling=df.ROLLING.values,
+            grouped_by_hour=USDBRLGroupedStatistic(
+                mean=hour_df.MEAN.values,
+                variance=hour_df.VARIANCE.values,
+                positive_std=hour_df.POS_STD.values,
+                negative_std=hour_df.NEG_STD.values,
+                relative_frequency=hour_df.REL_FREQ.values,
+                ewm=hour_df.MEAN.ewm(alpha=.6).mean().values,
+                diff=hour_df.DIFF.values,
+                labels=hour_df.index.astype(str).values
+            ),
+            grouped_by_weekday=USDBRLGroupedStatistic(
+                mean=week_df.MEAN.values,
+                variance=week_df.VARIANCE.values,
+                positive_std=week_df.POS_STD.values,
+                negative_std=week_df.NEG_STD.values,
+                relative_frequency=week_df.REL_FREQ.values,
+                ewm=week_df.MEAN.ewm(alpha=.6).mean().values,
+                diff=week_df.DIFF.values,
+                labels=week_df.index.values
+            )
+        )
 
     price_bars = graphene.List(
         PriceBarsType,
