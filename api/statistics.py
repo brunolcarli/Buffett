@@ -10,6 +10,7 @@ class USDBRLDFHandler:
             columns=['price', 'datetime_reference']
         )
         df.set_index(pd.to_datetime(df.datetime_reference), inplace=True)
+        df.index = df.index.tz_convert('America/Sao_Paulo')
         df['DIFF'] = df.price.diff().fillna(0)
         df['ROLLING'] = df.price.rolling(8).mean().fillna(0)
         return df
