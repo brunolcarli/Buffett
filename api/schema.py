@@ -48,7 +48,7 @@ class USDBRLType(graphene.ObjectType):
                 relative_frequency=hour_df.REL_FREQ.values,
                 ewm=hour_df.MEAN.ewm(alpha=.6).mean().values,
                 diff=hour_df.DIFF.values,
-                labels=hour_df.index.values
+                labels=hour_df.index.astype(str).values
             ),
             grouped_by_weekday=USDBRLGroupedStatistic(
                 mean=week_df.MEAN.values,
