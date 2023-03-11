@@ -45,8 +45,8 @@ class USDBRLDFHandler:
         df['DIFF'] = dataframe.price.diff().fillna(0)
         df['REL_FREQ'] = df.DIFF / df.DIFF.sum()
         df['F'] = index_count
-        df['POS_STD'] = df[['REL_FREQ', 'F']].T.var() + (df.REL_FREQ + df[['REL_FREQ', 'F']].T.std()).clip(0)
-        df['NEG_STD'] = df[['REL_FREQ', 'F']].T.var() + (df.REL_FREQ - df[['REL_FREQ', 'F']].T.std()).clip(0)
+        df['POS_STD'] = df[['REL_FREQ', 'F']].T.var() + (df.REL_FREQ + df[['REL_FREQ', 'F']].T.std())
+        df['NEG_STD'] = df[['REL_FREQ', 'F']].T.var() + (df.REL_FREQ - df[['REL_FREQ', 'F']].T.std())
 
         # Set percentage columns format
         df['REL_FREQ'] = df.REL_FREQ * 100
