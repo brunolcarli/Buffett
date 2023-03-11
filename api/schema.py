@@ -1,3 +1,4 @@
+import pytz
 import graphene
 from django.conf import settings
 from api.models import PriceBars, PartialPriceBar, USDBRL
@@ -27,6 +28,10 @@ class USDBRLType(graphene.ObjectType):
     datetime_reference = graphene.DateTime()
     price = graphene.Float()
     statistics = graphene.Field(USDBRLStatistics)
+
+    def resolve_datetime_reference(self, info, **kwargs):
+        # Resolve datetime to GMT-3
+        return self.datetime_reference.astimezone(pytz.timezone('America/Sao_Paulo'))
 
     def resolve_statistics(self, info, **kwargs):
         df = info.variable_values['dataframe']
