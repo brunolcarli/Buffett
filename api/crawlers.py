@@ -29,6 +29,16 @@ class USDBRLCrawler:
 
     def run(self):
         while True:
+            now = datetime.now()
+            # The broker does not work on Saturdays and Sunday
+            if now.strftime('%A') in ('Saturday', 'Sunday'):
+                continue
+
+            # The broker does not work after 16:00(NY) - (21:00UTC)
+            # ALso the broker starts at 9:00(NY) - (14:00UTC)
+            if now.hour > 21 or now.hour < 14:
+                continue
+
             self.get_data()
             sleep(self.sleep_secs)
 
