@@ -11,7 +11,7 @@ class Command(BaseCommand):
         print('Starting USDBRL daemon')
         daemon = USDBRLCrawler(
             'https://www.bloomberglinea.com.br/quote/USDBRL:CUR/',
-            3600
+            1200
         )
 
         daemon.run()
